@@ -58,7 +58,7 @@ func generateStats(opts options, writer io.StringWriter) error {
 	}
 
 	for dayIndex := range opts.endDay - opts.startDay + 1 {
-		writer.WriteString(fmt.Sprint(opts.startDay - dayIndex))
+		writer.WriteString(fmt.Sprint(opts.startDay + dayIndex))
 		for yearIndex := range statsByYear {
 			writer.WriteString(",")
 			writer.WriteString(fmt.Sprint(statsByYear[yearIndex][dayIndex]))
