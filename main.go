@@ -34,19 +34,34 @@ func main() {
 }
 
 func generateStats(opts options, writer io.StringWriter) error {
+	generateHeader(opts.start, opts.end, writer)
+	var statsByYear [][]int
 	for year := opts.start; year <= opts.end; year++ {
 		stats, err := yearStats(year, opts.days, opts.top)
 		if err != nil {
 			return err
 		}
-		writer.WriteString(fmt.Sprint(year))
-		for _, stat := range stats {
+		statsByYear = append(statsByYear, stats)
+	}
+
+	for dayIndex := range opts.days {
+		writer.WriteString(fmt.Sprint(dayIndex + 1))
+		for yearIndex := range statsByYear {
 			writer.WriteString(",")
-			writer.WriteString(fmt.Sprint(stat))
+			writer.WriteString(fmt.Sprint(statsByYear[yearIndex][dayIndex]))
 		}
 		writer.WriteString("\n")
 	}
 	return nil
+}
+
+func generateHeader(start, end int, writer io.StringWriter) {
+	writer.WriteString("day")
+	for year := start; year <= end; year++ {
+		writer.WriteString(",")
+		writer.WriteString(fmt.Sprint(year))
+	}
+	writer.WriteString("\n")
 }
 
 func yearStats(year, days, top int) ([]int, error) {
