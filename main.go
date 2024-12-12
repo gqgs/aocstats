@@ -14,17 +14,19 @@ import (
 //go:generate go run github.com/gqgs/argsgen@latest
 
 type options struct {
-	start int `arg:"start year,required"`
-	end   int `arg:"end year,required"`
-	days  int `arg:"number of days to compute,required"`
-	top   int `arg:"number of top times to consider,required"`
+	start  int  `arg:"start year,required"`
+	end    int  `arg:"end year,required"`
+	days   int  `arg:"number of days to compute,required"`
+	top    int  `arg:"number of top times to consider,required"`
+	header bool `arg:"generate CSV header"`
 }
 
 func main() {
 	opts := options{
-		start: 2015,
-		end:   time.Now().Year(),
-		top:   10,
+		start:  2015,
+		end:    time.Now().Year(),
+		top:    10,
+		header: true,
 	}
 	opts.MustParse()
 
@@ -34,7 +36,9 @@ func main() {
 }
 
 func generateStats(opts options, writer io.StringWriter) error {
-	generateHeader(opts.start, opts.end, writer)
+	if opts.header {
+		generateHeader(opts.start, opts.end, writer)
+	}
 	var statsByYear [][]int
 	for year := opts.start; year <= opts.end; year++ {
 		stats, err := yearStats(year, opts.days, opts.top)

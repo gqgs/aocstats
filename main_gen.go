@@ -15,6 +15,7 @@ func (o *options) flagSet() *flag.FlagSet {
     flagSet.IntVar(&o.end, "end", o.end, "end year")
     flagSet.IntVar(&o.days, "days", o.days, "number of days to compute")
     flagSet.IntVar(&o.top, "top", o.top, "number of top times to consider")
+    flagSet.BoolVar(&o.header, "header", o.header, "generate CSV header")
     return flagSet
 }
 
