@@ -17,7 +17,7 @@ func (o *options) flagSet() *flag.FlagSet {
     flagSet.IntVar(&o.endDay, "endDay", o.endDay, "end day")
     flagSet.IntVar(&o.top, "top", o.top, "number of top times to consider")
     flagSet.BoolVar(&o.header, "header", o.header, "generate CSV header")
-    flagSet.BoolVar(&o.latest, "latest", o.latest, "compute stats of latest day")
+    flagSet.BoolVar(&o.today, "today", o.today, "compute stats of today day")
     return flagSet
 }
 

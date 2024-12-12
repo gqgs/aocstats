@@ -21,7 +21,7 @@ type options struct {
 	endDay    int  `arg:"end day,required"`
 	top       int  `arg:"number of top times to consider,required"`
 	header    bool `arg:"generate CSV header"`
-	latest    bool `arg:"compute stats of latest day"`
+	today     bool `arg:"compute stats of today day"`
 }
 
 func main() {
@@ -35,7 +35,7 @@ func main() {
 	}
 	opts.MustParse()
 
-	if opts.latest {
+	if opts.today {
 		opts.header = false
 		opts.startDay = opts.endDay
 	}
