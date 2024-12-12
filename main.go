@@ -20,6 +20,7 @@ type options struct {
 	endDay    int  `arg:"end day,required"`
 	top       int  `arg:"number of top times to consider,required"`
 	header    bool `arg:"generate CSV header"`
+	latest    bool `arg:"compute stats of latest day"`
 }
 
 func main() {
@@ -32,6 +33,11 @@ func main() {
 		header:    true,
 	}
 	opts.MustParse()
+
+	if opts.latest {
+		opts.header = false
+		opts.startDay = opts.endDay
+	}
 
 	if err := generateStats(opts, os.Stdout); err != nil {
 		log.Fatal(err)
@@ -52,7 +58,7 @@ func generateStats(opts options, writer io.StringWriter) error {
 	}
 
 	for dayIndex := range opts.endDay - opts.startDay + 1 {
-		writer.WriteString(fmt.Sprint(dayIndex + 1))
+		writer.WriteString(fmt.Sprint(opts.startDay - dayIndex))
 		for yearIndex := range statsByYear {
 			writer.WriteString(",")
 			writer.WriteString(fmt.Sprint(statsByYear[yearIndex][dayIndex]))
