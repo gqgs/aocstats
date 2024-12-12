@@ -14,19 +14,22 @@ import (
 //go:generate go run github.com/gqgs/argsgen@latest
 
 type options struct {
-	start  int  `arg:"start year,required"`
-	end    int  `arg:"end year,required"`
-	days   int  `arg:"number of days to compute,required"`
-	top    int  `arg:"number of top times to consider,required"`
-	header bool `arg:"generate CSV header"`
+	startYear int  `arg:"start year,required"`
+	endYear   int  `arg:"end year,required"`
+	startDay  int  `arg:"start day,required"`
+	endDay    int  `arg:"end day,required"`
+	top       int  `arg:"number of top times to consider,required"`
+	header    bool `arg:"generate CSV header"`
 }
 
 func main() {
 	opts := options{
-		start:  2015,
-		end:    time.Now().Year(),
-		top:    10,
-		header: true,
+		startYear: 2015,
+		endYear:   time.Now().Year(),
+		startDay:  1,
+		endDay:    time.Now().Day(),
+		top:       10,
+		header:    true,
 	}
 	opts.MustParse()
 
@@ -37,18 +40,18 @@ func main() {
 
 func generateStats(opts options, writer io.StringWriter) error {
 	if opts.header {
-		generateHeader(opts.start, opts.end, writer)
+		generateHeader(opts.startYear, opts.endYear, writer)
 	}
 	var statsByYear [][]int
-	for year := opts.start; year <= opts.end; year++ {
-		stats, err := yearStats(year, opts.days, opts.top)
+	for year := opts.startYear; year <= opts.endYear; year++ {
+		stats, err := yearStats(year, opts.startDay, opts.endDay, opts.top)
 		if err != nil {
 			return err
 		}
 		statsByYear = append(statsByYear, stats)
 	}
 
-	for dayIndex := range opts.days {
+	for dayIndex := range opts.endDay - opts.startDay + 1 {
 		writer.WriteString(fmt.Sprint(dayIndex + 1))
 		for yearIndex := range statsByYear {
 			writer.WriteString(",")
@@ -59,19 +62,19 @@ func generateStats(opts options, writer io.StringWriter) error {
 	return nil
 }
 
-func generateHeader(start, end int, writer io.StringWriter) {
+func generateHeader(startYear, endYear int, writer io.StringWriter) {
 	writer.WriteString("day")
-	for year := start; year <= end; year++ {
+	for year := startYear; year <= endYear; year++ {
 		writer.WriteString(",")
 		writer.WriteString(fmt.Sprint(year))
 	}
 	writer.WriteString("\n")
 }
 
-func yearStats(year, days, top int) ([]int, error) {
+func yearStats(year, startDay, endDay, top int) ([]int, error) {
 	var averages []int
-	for i := range days {
-		times, err := yearDayStats(year, i+1, top)
+	for day := startDay; day <= endDay; day++ {
+		times, err := yearDayStats(year, day, top)
 		if err != nil {
 			return nil, err
 		}

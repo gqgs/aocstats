@@ -11,9 +11,10 @@ import (
 
 func (o *options) flagSet() *flag.FlagSet {
     flagSet := flag.NewFlagSet(os.Args[0], flag.ExitOnError)
-    flagSet.IntVar(&o.start, "start", o.start, "start year")
-    flagSet.IntVar(&o.end, "end", o.end, "end year")
-    flagSet.IntVar(&o.days, "days", o.days, "number of days to compute")
+    flagSet.IntVar(&o.startYear, "startYear", o.startYear, "start year")
+    flagSet.IntVar(&o.endYear, "endYear", o.endYear, "end year")
+    flagSet.IntVar(&o.startDay, "startDay", o.startDay, "start day")
+    flagSet.IntVar(&o.endDay, "endDay", o.endDay, "end day")
     flagSet.IntVar(&o.top, "top", o.top, "number of top times to consider")
     flagSet.BoolVar(&o.header, "header", o.header, "generate CSV header")
     return flagSet
@@ -36,14 +37,17 @@ func (o *options) Parse() error {
         break
     }
 
-    if o.start == 0 {
-        return errors.New("argument 'start' is required")
+    if o.startYear == 0 {
+        return errors.New("argument 'startYear' is required")
     }
-    if o.end == 0 {
-        return errors.New("argument 'end' is required")
+    if o.endYear == 0 {
+        return errors.New("argument 'endYear' is required")
     }
-    if o.days == 0 {
-        return errors.New("argument 'days' is required")
+    if o.startDay == 0 {
+        return errors.New("argument 'startDay' is required")
+    }
+    if o.endDay == 0 {
+        return errors.New("argument 'endDay' is required")
     }
     if o.top == 0 {
         return errors.New("argument 'top' is required")
