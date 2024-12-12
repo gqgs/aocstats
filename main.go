@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"golang.org/x/net/html"
+	"golang.org/x/sync/errgroup"
 )
 
 //go:generate go run github.com/gqgs/argsgen@latest
@@ -78,19 +79,23 @@ func generateHeader(startYear, endYear int, writer io.StringWriter) {
 }
 
 func yearStats(year, startDay, endDay, top int) ([]int, error) {
-	var averages []int
+	averages := make([]int, endDay-startDay+1)
+	g := new(errgroup.Group)
 	for day := startDay; day <= endDay; day++ {
-		times, err := yearDayStats(year, day, top)
-		if err != nil {
-			return nil, err
-		}
-		average, err := timeAverage(times)
-		if err != nil {
-			return nil, err
-		}
-		averages = append(averages, average)
+		g.Go(func() error {
+			times, err := yearDayStats(year, day, top)
+			if err != nil {
+				return err
+			}
+			average, err := timeAverage(times)
+			if err != nil {
+				return err
+			}
+			averages[day-startDay] = average
+			return nil
+		})
 	}
-	return averages, nil
+	return averages, g.Wait()
 }
 
 func timeAverage(times []string) (int, error) {
